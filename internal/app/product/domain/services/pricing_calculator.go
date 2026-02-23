@@ -3,7 +3,7 @@ package services
 import (
 	"time"
 
-	"github.com/example/catalog-proj/internal/app/product/domain"
+	"github.com/bansal247/catalog-proj/internal/app/product/domain"
 )
 
 type PricingCalculator struct{}

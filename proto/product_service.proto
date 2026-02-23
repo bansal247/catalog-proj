@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package product.v1;
+
+option go_package = "github.com/example/catalog-proj/proto/product/v1;productv1";
+
+import "google/protobuf/timestamp.proto";
+
+service ProductService {
+  // Commands
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductReply);
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductReply);
+  rpc ActivateProduct(ActivateProductRequest) returns (ActivateProductReply);
+  rpc DeactivateProduct(DeactivateProductRequest) returns (DeactivateProductReply);
+  rpc ApplyDiscount(ApplyDiscountRequest) returns (ApplyDiscountReply);
+  rpc RemoveDiscount(RemoveDiscountRequest) returns (RemoveDiscountReply);
+
+  // Queries
+  rpc GetProduct(GetProductRequest) returns (GetProductReply);
+  rpc ListProducts(ListProductsRequest) returns (ListProductsReply);
+}
+
+// ── Commands ─────────────────────────────────────────────────────────────────
+
+message CreateProductRequest {
+  string name = 1;
+  string description = 2;
+  string category = 3;
+  // price as numerator/denominator e.g. $19.99 → 1999/100
+  int64 base_price_numerator = 4;
+  int64 base_price_denominator = 5;
+}
+
+message CreateProductReply {
+  string product_id = 1;
+}
+
+message UpdateProductRequest {
+  string product_id = 1;
+  string name = 2;
+  string description = 3;
+  string category = 4;
+}
+
+message UpdateProductReply {}
+
+message ActivateProductRequest {
+  string product_id = 1;
+}
+
+message ActivateProductReply {}
+
+message DeactivateProductRequest {
+  string product_id = 1;
+}
+
+message DeactivateProductReply {}
+
+message ApplyDiscountRequest {
+  string product_id = 1;
+  double discount_percentage = 2;
+  google.protobuf.Timestamp start_date = 3;
+  google.protobuf.Timestamp end_date = 4;
+}
+
+message ApplyDiscountReply {}
+
+message RemoveDiscountRequest {
+  string product_id = 1;
+}
+
+message RemoveDiscountReply {}
+
+// ── Queries ───────────────────────────────────────────────────────────────────
+
+message GetProductRequest {
+  string product_id = 1;
+}
+
+message GetProductReply {
+  ProductProto product = 1;
+}
+
+message ListProductsRequest {
+  string category = 1;    // optional filter
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message ListProductsReply {
+  repeated ProductProto products = 1;
+  string next_page_token = 2;
+}
+
+// ── Shared types ──────────────────────────────────────────────────────────────
+
+message ProductProto {
+  string product_id = 1;
+  string name = 2;
+  string description = 3;
+  string category = 4;
+  double base_price = 5;
+  double effective_price = 6;
+  string status = 7;
+  DiscountProto discount = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message DiscountProto {
+  double percentage = 1;
+  google.protobuf.Timestamp start_date = 2;
+  google.protobuf.Timestamp end_date = 3;
+}

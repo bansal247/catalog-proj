@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"fmt"
 	"math/big"
 )
 
@@ -29,26 +28,14 @@ func NewMoneyFromRat(r *big.Rat) (*Money, error) {
 	return &Money{Amount: copied}, nil
 }
 
-func (m *Money) Rat() *big.Rat {
-	return new(big.Rat).Set(m.Amount)
-}
+func (m *Money) Rat() *big.Rat {return new(big.Rat).Set(m.Amount)}
+func (m *Money) Numerator() int64 {return m.Amount.Num().Int64()}
+func (m *Money) Denominator() int64 {return m.Amount.Denom().Int64()}
+func (m *Money) ApproxString() string {return m.Amount.FloatString(2)}
 
-func (m *Money) Numerator() int64 {
-	return m.Amount.Num().Int64()
-}
-
-func (m *Money) Denominator() int64 {
-	return m.Amount.Denom().Int64()
-}
-
-func (m *Money) Float64() float64 {
-	f, _ := m.Amount.Float64()
+func (m *Money) ApproxFloat64() float64 {
+	f, _ := m.Amount.Float64() // Ignoring error since we know amount is valid and fits in float64
 	return f
-}
-
-func (m *Money) String() string {
-	f, _ := m.Amount.Float64()
-	return fmt.Sprintf("%.2f", f)
 }
 
 func (m *Money) Equal(other *Money) bool {
@@ -57,7 +44,6 @@ func (m *Money) Equal(other *Money) bool {
 	}
 	return m.Amount.Cmp(other.Amount) == 0
 }
-
 
 func (m *Money) ApplyPercentageDiscount(discountPercent *big.Rat) (*Money, error) {
 	if discountPercent == nil || discountPercent.Sign() < 0 || discountPercent.Cmp(big.NewRat(100, 1)) > 0 {
